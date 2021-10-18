@@ -1,10 +1,9 @@
 # aq-bot
-Goal: create a Twitter bot that posts daily air quality reports on the Leon Soil and Water Twitter account
+Background:
 
-Design:
+Problem:
 
-
-Development:
+Solution: Publishing daily air quality reports through the use a Twitter bot.
 
 
 
