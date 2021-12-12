@@ -1,13 +1,18 @@
 """
 input: time of post (AM or PM)
-output: aqi
+output: aqi and processed image
 """
+
+# TODO: make time a variable
+
+## PART 1: GETTING AQI FOR TODAY'S DATE AND TIME
 
 # import libraries
 import pandas as pd
 import requests
 import json
 from datetime import date
+from PIL import Image, ImageDraw, ImageFont
 
 # get today's date
 day = date.today().day
@@ -48,3 +53,34 @@ conditions = pd.DataFrame({
 #  print status
 print("the AQI for {},{}:00 is {}, category {}".format(date.today(), post_time, df.iloc[0]['AQI'], df.iloc[0]['Category']))
 print("the msg is: {}".format(conditions[conditions['category'] == df.iloc[0]['Category']].iloc[0]['message']))
+
+## PART 2: EDIT PHOTO
+
+# set name of file
+fileName = conditions[conditions['category'] == df.iloc[0]['Category']].iloc[0]['color']
+
+# generate saying
+saying = "As of {month}/{day}/{year}, {time}M:".format(month=month, day=day, year=year, time='3P')
+
+# store picture / create image object
+pic = Image.open('/Users/shelbygreen/Repositories/aq-bot/templates/{color}.png'.format(color=fileName))
+
+# add saying to the picture
+# create draw object from image object
+draw = ImageDraw.Draw(pic)
+
+# add font and text size
+font = ImageFont.truetype("Library/Fonts/GlacialIndifference-Regular.otf", 70)
+
+# draw on image
+draw.text((50, 350), '{saying}'.format(saying=saying), fill='#63625E', font=font)
+
+# add AQI to the picture
+# add font and text size
+font = ImageFont.truetype("Library/Fonts/GlacialIndifference-Bold.otf", 150)
+
+# draw on image
+draw.text((90, 470), '{value}'.format(value=df.iloc[0]['AQI']), fill='#000000', font=font)
+
+# save picture
+pic.save('/Users/shelbygreen/Repositories/aq-bot/finished/{month}-{day}-{year}-{time}.png'.format(month=month, day=day, year=year, time='3P'))
