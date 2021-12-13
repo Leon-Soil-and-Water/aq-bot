@@ -1,7 +1,10 @@
 # misc
 finished
+<<<<<<< HEAD
 keys.yaml
 .DS_Store
+=======
+>>>>>>> d03b6c4f714bf590fff5a8354859fa134652d1e5
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
