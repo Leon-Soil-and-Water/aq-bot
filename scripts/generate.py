@@ -61,7 +61,7 @@ def format_time(post_time):
         hour = str(post_time) + 'AM'
     return hour
 
-hour = format_time(post_time=13)
+hour = format_time(int(post_time))
 
 # print status check
 print("the AQI for {day} {hour} is {AQI}, category {level}".format(day=date.today(), hour = hour, AQI = df.iloc[0]['AQI'], level = df.iloc[0]['Category']))
@@ -77,7 +77,7 @@ from datetime import date
 fileName = conditions[conditions['category'] == df.iloc[0]['Category']].iloc[0]['color']
 
 # generate saying
-saying = "As of {month}/{day}/{year}, {time}M:".format(month=month, day=day, year=year, time='3P')
+saying = "As of {month}/{day}/{year}, {time}".format(month=month, day=day, year=year, time=hour)
 
 # store picture / create image object
 pic = Image.open('/Users/shelbygreen/Repositories/aq-bot/templates/{color}.png'.format(color=fileName))
@@ -99,7 +99,7 @@ font = ImageFont.truetype("Library/Fonts/GlacialIndifference-Bold.otf", 150)
 # draw on image
 draw.text((90, 470), '{value}'.format(value=df.iloc[0]['AQI']), fill='#000000', font=font)
 
-pic.save('/Users/shelbygreen/Repositories/aq-bot/templates/{month}-{day}-{year}-{post_time}.png'.format(month=month, day=day, year=year, post_time=post_time))
+pic.save('/Users/shelbygreen/Repositories/aq-bot/finished/{month}-{day}-{year}-{post_time}.png'.format(month=month, day=day, year=year, post_time=post_time))
 
 ## PART 3: STORE AQI DATA
 
