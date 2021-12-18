@@ -127,5 +127,5 @@ def post_tweet(post_time):
         schedule.run_pending()
         time.sleep(1)
         
-    # post tweet
-    post_tweet()
+# post tweet
+post_tweet()
