@@ -54,7 +54,7 @@ def twitter_api():
   return api
 
 # post picture
-def post(post_time):
+def post_tweet(post_time):
     # get today's date
     day = date.today().day
     month = date.today().month
@@ -126,3 +126,6 @@ def post(post_time):
     while True:
         schedule.run_pending()
         time.sleep(1)
+        
+    # post tweet
+    post_tweet()
