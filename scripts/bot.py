@@ -25,7 +25,7 @@ conditions = pd.DataFrame({
 })
 
 #read YAML file
-yaml_file = open("../keys.yaml")
+yaml_file = open("./keys.yaml")
 parsed_yaml_file = yaml.safe_load(yaml_file)
 
 """define functions"""
@@ -62,8 +62,9 @@ def post_tweet(post_time):
     
     # get post_time
     post_time_2 = int(post_time) + 1
-    
+
     # pull data from AirNow
+    print("pulling AQI data")
     r = requests.get('https://www.airnowapi.org/aq/data/?startDate={year}-{month}-{day}T{time1}&endDate={year}-{month}-{day}T{time2}&parameters=PM25&BBOX=-84.500651,30.275370,-84.080424,30.684863&dataType=B&format=application/json&verbose=1&monitorType=2&includerawconcentrations=0&API_KEY=2BB44069-F9EF-4CA7-8B67-C9832B168B60'.format(day = day, month = month, year = year, time1 = post_time, time2 = post_time_2)).json()
     
     # store in dataframe
@@ -86,10 +87,12 @@ def post_tweet(post_time):
     fileName = conditions[conditions['category'] == df.iloc[0]['Category']].iloc[0]['color']
 
     # generate saying
+    print("generating saying")
     saying = "As of {month}/{day}/{year}, {time}:".format(month=month, day=day, year=year, time=hour)
 
     # store picture
-    pic = Image.open('../templates/{color}.png'.format(color=fileName))
+    print("creating image")
+    pic = Image.open('./templates/{color}.png'.format(color=fileName))
 
     # create draw object from image object
     draw = ImageDraw.Draw(pic)
@@ -105,27 +108,27 @@ def post_tweet(post_time):
     draw.text((90, 470), '{value}'.format(value=df.iloc[0]['AQI']), fill='#000000', font=font)
 
     # save photo to 'finished' folder
-    finished_pic = '../finished/{month}-{day}-{year}-{post_time}.png'.format(month=month, day=day, year=year, post_time=post_time)
+    finished_pic = './finished/{month}-{day}-{year}-{post_time}.png'.format(month=month, day=day, year=year, post_time=post_time)
     pic.save(finished_pic)
     
     #post tweet
+    print("posting tweet")
     api = twitter_api()
 
     media = api.media_upload(finished_pic)
-    if post_time == 8:
+    if int(post_time) < 15:
         api.update_status(status='Good morning ☀️ ' + df['message'][0], media_ids=[media.media_id])
     else:
         api.update_status(status='Good afternoon 🍂 ' + df['message'][0], media_ids=[media.media_id])
     
-    print("just posted tweet for {month}/{day}/{year} at {hour}!".format(month=month, day=day, year=year, time=hour))
-
-    """run scheduled job"""
-    schedule.every().day.at("08:00").do(post, post_time='8')
-    schedule.every().day.at("15:00").do(post, post_time='15')
-
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    print("{month}/{day}/{year}, {hour}: {aqi}".format(month=month, day=day, year=year, hour=hour, aqi=df.iloc[0]['AQI']))
         
 # post tweet
-post_tweet()
+"""run scheduled job"""
+print("scheduled jobs")
+schedule.every().day.at("08:00").do(post_tweet, post_time='8')
+schedule.every().day.at("15:00").do(post_tweet, post_time='15')
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
