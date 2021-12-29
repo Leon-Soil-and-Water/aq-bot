@@ -26,7 +26,7 @@ conditions = pd.DataFrame({
 })
 
 #read YAML file
-yaml_file = open("../keys.yaml")
+yaml_file = open("./keys.yaml")
 parsed_yaml_file = yaml.safe_load(yaml_file)
 
 """define functions"""
