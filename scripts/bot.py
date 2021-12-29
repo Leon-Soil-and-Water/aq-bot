@@ -26,7 +26,7 @@ conditions = pd.DataFrame({
 })
 
 #read YAML file
-yaml_file = open("./keys.yaml")
+yaml_file = open("../keys.yaml")
 parsed_yaml_file = yaml.safe_load(yaml_file)
 
 """define functions"""
@@ -79,69 +79,66 @@ def post(post_time):
             
             # clean data
             df['date'] = df['UTC'].str.split('T').str[0]
-            df['time'] = df['UTC'].str.split('T').str[1]
-            df = df.drop(['UTC'], axis=1)
-            df['Category'] = df['Category'].astype(str)
-
-            # add conditions to the dataframe
-            add_conditions(df)
-
-            # create formatted hour
-            hour = format_time(int(post_time))
-
-            # set name of file
-            fileName = conditions[conditions['category'] == df.iloc[0]['Category']].iloc[0]['color']
-
-            # generate saying
-            saying = "As of {month}/{day}/{year}, {time}:".format(month=month, day=day, year=year, time=hour)
-
-            # store picture
-            pic = Image.open('/Users/shelbygreen/Repositories/aq-bot/templates/{color}.png'.format(color=fileName))
-
-            # create draw object from image object
-            draw = ImageDraw.Draw(pic)
-
-            # adjust font and text size
-            font = ImageFont.truetype("Library/Fonts/GlacialIndifference-Regular.otf", 70)
-
-            # add saying to picture
-            draw.text((50, 350), '{saying}'.format(saying=saying), fill='#63625E', font=font)
-
-            # add AQI to the picture
-            font = ImageFont.truetype("Library/Fonts/GlacialIndifference-Bold.otf", 150)
-            draw.text((90, 470), '{value}'.format(value=df.iloc[0]['AQI']), fill='#000000', font=font)
-
-            # save photo to 'finished' folder
-            finished_pic = '/Users/shelbygreen/Repositories/aq-bot/finished/{month}-{day}-{year}-{post_time}.png'.format(month=month, day=day, year=year, post_time=post_time)
-            pic.save(finished_pic)
-
-            #post tweet
-            api = twitter_api()
-
-            media = api.media_upload(finished_pic)
-            if post_time == 8:
-                api.update_status(
-                    status="""
-                    Good morning ☀️
-
-                    """ + df['message'][0], media_ids=[media.media_id])
-            else:
-                api.update_status(
-                    status="""
-                    Good afternoon 🍂
-
-                    """ + df['message'][0], media_ids=[media.media_id])
-
-            print("just posted tweet!")
         except:
             print('missing data, breaking')
             pass
+    
+    print("data is complete, continue")
+    
+    if len(r) > 0:
+        # finish cleaning the data
+        df['time'] = df['UTC'].str.split('T').str[1]
+        df = df.drop(['UTC'], axis=1)
+        df['Category'] = df['Category'].astype(str)
+
+        # add conditions to the dataframe
+        add_conditions(df)
+
+        # create formatted hour
+        hour = format_time(int(post_time))
+
+        # set name of file
+        fileName = conditions[conditions['category'] == df.iloc[0]['Category']].iloc[0]['color']
+
+        # generate saying
+        saying = "As of {month}/{day}/{year}, {time}:".format(month=month, day=day, year=year, time=hour)
+
+        # store picture
+        pic = Image.open('../templates/{color}.png'.format(color=fileName))
+
+        # create draw object from image object
+        draw = ImageDraw.Draw(pic)
+
+        # adjust font and text size
+        font = ImageFont.truetype("../fonts/GlacialIndifference-Regular.otf", 70)
+
+        # add saying to picture
+        draw.text((50, 350), '{saying}'.format(saying=saying), fill='#63625E', font=font)
+
+        # add AQI to the picture
+        font = ImageFont.truetype("../fonts/GlacialIndifference-Bold.otf", 150)
+        draw.text((90, 470), '{value}'.format(value=df.iloc[0]['AQI']), fill='#000000', font=font)
+
+        # save photo to 'finished' folder
+        finished_pic = '../finished/{month}-{day}-{year}-{post_time}.png'.format(month=month, day=day, year=year, post_time=post_time)
+        pic.save(finished_pic)
+
+        #post tweet
+        api = twitter_api()
+
+        media = api.media_upload(finished_pic)
+        if post_time == '8':
+            api.update_status(status="""Good morning ☀️ \n""" + df['message'][0], media_ids=[media.media_id])
+        else:
+            api.update_status(status="""Good afternoon 🍂 \n""" + df['message'][0], media_ids=[media.media_id])
+
+        print("just posted tweet! {month}/{day}/{year}, {time}: {value}".format(month=month, day=day, year=year, time=hour, value=df.iloc[0]['AQI']))
         
 # post tweet
 """run scheduled job"""
 print("scheduled jobs")
-schedule.every().day.at("08:00").do(post, post_time='8')
-schedule.every().day.at("15:00").do(post, post_time='15')
+schedule.every().day.at("13:00").do(post, post_time='8') #8:00 is actually 13:00 on the bot's VM
+schedule.every().day.at("20:00").do(post, post_time='15') #15:00 is actually 20:00 on the bot's VM
 
 while True:
     schedule.run_pending()
