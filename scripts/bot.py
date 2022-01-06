@@ -33,9 +33,9 @@ parsed_yaml_file = yaml.safe_load(yaml_file)
 # add conditions to original dataframe
 def add_conditions(dataframe):
     for i in range(len(dataframe)):
-        dataframe.loc[i, 'status'] = conditions[conditions['category'] == df.loc[i, 'Category']]['status'].loc[0]
-        dataframe.loc[i, 'color'] = conditions[conditions['category'] == df.loc[i, 'Category']]['color'].loc[0]
-        dataframe.loc[i, 'message'] = conditions[conditions['category'] == df.loc[i, 'Category']]['message'].loc[0]
+        dataframe.loc[i, 'status'] = conditions[conditions['category'] == df.loc[i, 'Category']]['status'].reset_index(drop=True).loc[0]
+        dataframe.loc[i, 'color'] = conditions[conditions['category'] == df.loc[i, 'Category']]['color'].reset_index(drop=True).loc[0]
+        dataframe.loc[i, 'message'] = conditions[conditions['category'] == df.loc[i, 'Category']]['message'].reset_index(drop=True).loc[0]
     return dataframe
 
 # format time

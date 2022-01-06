@@ -3,6 +3,7 @@ finished
 keys.yaml
 .DS_Store
 scripts/Untitled.ipynb
+bot.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
