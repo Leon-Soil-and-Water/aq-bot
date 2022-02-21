@@ -1,12 +1,8 @@
-# aq-bot
-Background: 
-- add information about the Mulch It, Don't Burn It Campaign
+Publishing daily local air quality reports via a [Twitter bot](twitter.com/leon_swcd).
 
-Problem:
-- informal monitoring of air quality
-
-Solution:
-- Publishing daily local air quality reports through the use a Twitter bot.
+### Future Datasets:
+- https://www.weatherstem.com/apiv2_docs
+- https://climatecenter.fsu.edu/climate-data-access-tools/downloadable-data
 
 
 
